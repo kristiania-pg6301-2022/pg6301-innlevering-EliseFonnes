@@ -1,5 +1,5 @@
 /.idea/
 node_modules/
-/.parcel-cache/
-/dist/
+.parcel-cache/
+dist/
 
