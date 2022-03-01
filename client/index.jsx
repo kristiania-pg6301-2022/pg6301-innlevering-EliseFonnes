@@ -7,8 +7,10 @@ function FrontPage() {
 }
 
 function Application() {
-    return
-        <Router>
+    return <Router>
+            <Route path={"/"} element={<FrontPage />}/>
+        <Route path={"/movies/new"} element={<h1>New movie</h1>}/>
+        <Route path={"/movies"} element={<h1>List movies</h1>}/>
 
          </Router>
     <FrontPage/>;
