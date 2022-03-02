@@ -2,7 +2,7 @@
   "name": "pg6301-innlevering-elisefonnes",
   "version": "1.0.0",
   "scripts": {
-    "dev": "parcel serve index.html",
+    "dev": "parcel index.html",
     "build": "npm install --include=dev && parcel build index.html",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

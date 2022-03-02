@@ -1,18 +1,11 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
+import { BrowserRouter } from "react-router-dom";
+import { QuizGame } from "./quizGame";
 
-function FrontPage() {
-  return <h1>Kristiania Movie Database</h1>;
-}
-
-function Application() {
-  return (
-    <Router>
-      <Route path={"/"} element={<FrontPage />} />
-      <Route path={"/movies/new"} element={<h1>New movie</h1>} />
-      <Route path={"/movies"} element={<h1>List movies</h1>} />
-    </Router>
-  );
-}
-
-ReactDOM.render(<Application />, document.getElementById("app"));
+ReactDOM.render(
+  <BrowserRouter>
+    <QuizGame />
+  </BrowserRouter>,
+  document.getElementById("app")
+);
