@@ -1,0 +1,19 @@
+name: Run test
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: action/setup-node@v2
+        with:
+          node-version: 16x
+          cache: 'npm'
+      - run: npm ci
+      - run: npm test
