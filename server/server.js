@@ -1,10 +1,51 @@
 import express from "express";
 import * as path from "path";
+import cookieParser, { signedCookies } from "cookie-parser";
+import { isCorrectAnswer, randomQuestion } from "./questions.js";
+import bodyParser from "body-parser";
 
 const app = express();
+app.use(bodyParser.json());
+app.use(cookieParser(process.env.COOKIE_SECRET));
 
-app.get("/api/quiz", (req, res) => {
-  res.json({});
+app.get("/quiz/score", (req, res) => {
+  const score = req.signedCookies.score
+    ? JSON.parse(reg.signedCookies.score)
+    : {
+        answered: 0,
+        correct: 0,
+      };
+
+  res.json(score);
+});
+
+app.get("/quiz/random", (req, res) => {
+  const { id, question, answers } = randomQuestion();
+  res.json({ id, question, answers });
+});
+
+app.post("/quiz/answer", (req, res) => {
+  const { id, answer } = req.body;
+  const score = req.signedCookies.score
+    ? JSON.parse(req, signedCookies.score)
+    : {
+        answered: 0,
+        correct: 0,
+      };
+  const question = Questions.find((q) => q.id === id);
+  if (!question) {
+    return res.sendStatus(404);
+  }
+
+  score.answered += 1;
+  if (isCorrectAnswer(question, answer)) {
+    score.correct += 1;
+    res.cookie("score", JSON.stringify(score), { signed: true });
+    return res.json({ result: "correct" });
+  } else {
+    res.cookie("score", JSON.stringify(score), { signed: true });
+    return res.json({ result: "incorrect" });
+  }
 });
 
 app.use(express.static("../client/dist"));
