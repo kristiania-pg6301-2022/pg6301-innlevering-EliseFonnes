@@ -10,7 +10,7 @@ app.use(cookieParser(process.env.COOKIE_SECRET));
 
 app.get("/quiz/score", (req, res) => {
   const score = req.signedCookies.score
-    ? JSON.parse(reg.signedCookies.score)
+    ? JSON.parse(req.signedCookies.score)
     : {
         answered: 0,
         correct: 0,
