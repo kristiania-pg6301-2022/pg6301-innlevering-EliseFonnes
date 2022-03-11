@@ -1,8 +1,24 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Link, Route, Routes, useNavigate } from "react-router-dom";
 import { isCorrectAnswer, randomQuestion } from "./../server/questions.js";
 
 export const QuestionContext = React.createContext({ randomQuestion });
+
+async function postJSON(url, json) {
+  const res = await fetch(url, {
+    method: "post",
+    headers: {
+      "content-type": "application/json",
+    },
+    body: JSON.stringify(json),
+  });
+  return res.json();
+}
+const quizApi = {
+  postAnswer: async ({ id, answer }) => {
+    return postJSON("/api/question", { id, answer });
+  },
+};
 
 export function FrontPage({ correctAnswers, questionsAnswered }) {
   return (
@@ -19,33 +35,61 @@ export function FrontPage({ correctAnswers, questionsAnswered }) {
 }
 
 export function ShowQuestion({ setCorrectAnswers, setQuestionsAnswered }) {
-  function handleAnswer(answer) {
-    setQuestionsAnswered((q) => q + 1);
-    if (isCorrectAnswer(question, answer)) {
-      setCorrectAnswers((q) => q + 1);
+  const navigate = useNavigate();
+  let id = "";
+
+  const [answer, setAnswer] = useState("");
+  async function handleSubmit(e) {
+    e.preventDefault();
+
+    const data = await quizApi.postAnswer({ id, answer });
+    if (data.result === true) {
       navigate("/answer/correct");
     } else {
       navigate("/answer/wrong");
     }
   }
 
-  const navigate = useNavigate();
-  const { randomQuestion } = useContext(QuestionContext);
-  const [question] = useState(randomQuestion());
-  return (
-    <div>
-      <h1>{question.question}</h1>
-      {Object.keys(question.answers)
-        .filter((a) => question.answers[a])
-        .map((a) => (
-          <div key={a} data-testid={a}>
-            <button onClick={() => handleAnswer(a)}>
-              {question.answers[a]}
-            </button>
-          </div>
-        ))}
-    </div>
-  );
+  //const { randomQuestion } = useContext(QuestionContext);
+  const [question, setQuestion] = useState("");
+  console.log(id + "ping");
+
+  useEffect(async () => {
+    const res = await fetch("/quiz/random");
+    setQuestion(await res.json());
+
+    console.log(id + "pong");
+  }, []);
+
+  let test = "";
+
+  if (question) {
+    id = question.id;
+  }
+  if (question) {
+    test = (
+      <div>
+        <h1>{question.question}</h1>
+        {Object.keys(question.answers)
+          .filter((a) => question.answers[a])
+          .map((a) => (
+            <div key={a}>
+              <form onSubmit={handleSubmit}>
+                <button
+                  name={"answer"}
+                  value={question.answers[a]}
+                  onClick={() => setAnswer(a)}
+                >
+                  {question.answers[a]}
+                </button>
+              </form>
+            </div>
+          ))}
+      </div>
+    );
+  }
+
+  return <div>{test}</div>;
 }
 
 function ShowAnswer() {

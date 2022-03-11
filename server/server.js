@@ -1,12 +1,22 @@
 import express from "express";
 import * as path from "path";
 import cookieParser, { signedCookies } from "cookie-parser";
-import { isCorrectAnswer, randomQuestion } from "./questions.js";
+import { isCorrectAnswer, randomQuestion, Questions } from "./questions.js";
 import bodyParser from "body-parser";
 
 const app = express();
 app.use(bodyParser.json());
 app.use(cookieParser(process.env.COOKIE_SECRET));
+
+app.post("/api/question", (req, res, next) => {
+  const { id, answer } = req.body;
+  const question = Questions.find((q) => q.id === id);
+  if (isCorrectAnswer(question, answer)) {
+    res.json({ result: true });
+  } else {
+    res.json({ result: false });
+  }
+});
 
 app.get("/quiz/score", (req, res) => {
   const score = req.signedCookies.score
